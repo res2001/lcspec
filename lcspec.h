@@ -6,8 +6,8 @@
         выравние переменных
         определение inline-функций
 
-  Константы вида LPRAGME_XXX определяют содержимое директивы @c \#pragma, если она
-  нужна. Если данное действие задается не через @c \#pragma, то константа LPRAGME_XXX
+  Константы вида LPRAGMA_XXX определяют содержимое директивы @c \#pragma, если она
+  нужна. Если данное действие задается не через @c \#pragma, то константа LPRAGMA_XXX
   не определяется вообще.
 
   Остальные определения используются в коде как есть и должны быть всегда
@@ -65,7 +65,7 @@
 #elif defined   (  __TASKING__  )
     #error "tasking compiler spec. is't defined"
 #else
-    #error "compiler is't specifed"
+    #error "compiler is't specified"
 
 
     /** Определение встраиваемой (inline) функции  */

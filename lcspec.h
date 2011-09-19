@@ -42,7 +42,7 @@
     variable LATTRIBUTE_ALIGN(n);
     @endcode
 
-  На настоящий момент реализованы только определения для GCC.
+  На настоящий момент реализованы определения для GCC и MSVC.
 
   @author Borisov Alexey <borisov@lcard.ru>
   @date   10.01.2011
@@ -52,12 +52,21 @@
 #define LCSPEC_H_
 
 #if defined   (  __GNUC__  )
+    /*------------------------ определения GCC -------------------------------*/
     #define LINLINE               inline
     #define LATTRIBUTE_PACKED     __attribute__ ((packed))
     //#define LPRAGMA_PACKED   pack(1)
     //#define LPRAGMA_PACK_RESTORE  pack()
     //#define LPRAGMA_ALIGN(n) align(n)
     #define LATTRIBUTE_ALIGN(n) __attribute__ ((aligned (n)))
+#elif defined ( _MSC_VER )
+    /*------------------------ определения MSVC ------------------------------*/
+    #define LINLINE               __inline
+    #define LATTRIBUTE_PACKED
+    #define LPRAGMA_PACKED   pack(1)
+    #define LPRAGMA_PACK_RESTORE  pack()
+    #define LPRAGMA_ALIGN(n) align(n)
+    #define LATTRIBUTE_ALIGN(n)
 #elif defined ( __CC_ARM   )
     #error "cc arm compiler spec. is't defined"
 #elif defined ( __ICCARM__ )

@@ -34,15 +34,12 @@
     #endif
     @endcode
 
-  Выравнивание на n байт выполняется подобным же образом:
+  Выравнивание на n байт выполняется подобным образом:
     @code
-    #ifdef LPRAGMA_ALIGN
-        #pragma LPRAGMA_ALIGN(n)
-    #endif
-    variable LATTRIBUTE_ALIGN(n);
+    LALIGN(n) int i LATTRIBUTE_ALIGN(n);
     @endcode
 
-  На настоящий момент реализованы определения для GCC и MSVC.
+  На настоящий момент реализованы определения для GCC, MSVC и LabWindow/CVI.
 
   @author Borisov Alexey <borisov@lcard.ru>
   @date   10.01.2011
@@ -57,15 +54,23 @@
     #define LATTRIBUTE_PACKED     __attribute__ ((packed))
     //#define LPRAGMA_PACKED   pack(1)
     //#define LPRAGMA_PACK_RESTORE  pack()
-    //#define LPRAGMA_ALIGN(n) align(n)
-    #define LATTRIBUTE_ALIGN(n) __attribute__ ((aligned (n)))
+    #define LALIGN(n)
+    #define LATTRIBUTE_ALIGN(n)   __attribute__ ((aligned (n)))
 #elif defined ( _MSC_VER )
     /*------------------------ определения MSVC ------------------------------*/
-    #define LINLINE               __inline
+    #define LINLINE                 __inline
     #define LATTRIBUTE_PACKED
-    #define LPRAGMA_PACKED   pack(1)
+    #define LPRAGMA_PACKED          pack(1)
+    #define LPRAGMA_PACK_RESTORE    pack()
+    #define LALIGN(n)               __declspec( align( n ) )
+    #define LATTRIBUTE_ALIGN(n)
+#elif defined ( _CVI_ )
+    /*------------------- определения для LabWindow/CVI ----------------------*/
+    #define LINLINE               inline
+    #define LATTRIBUTE_PACKED
+    #define LPRAGMA_PACKED        pack(1)
     #define LPRAGMA_PACK_RESTORE  pack()
-    #define LPRAGMA_ALIGN(n) align(n)
+    #define LALIGN(n)             __declspec( align( n ) )
     #define LATTRIBUTE_ALIGN(n)
 #elif defined ( __CC_ARM   )
     #error "cc arm compiler spec. is't defined"
@@ -91,10 +96,10 @@
         Если не используется, то макрос не должен быть определен */
     #define LPRAGMA_PACK_RESTORE  pack()
 
-    /** Содержимое @c \#pragmа для указания, что следующая переменная должна быть
+    /** Указание, что следующая переменная должна быть
         помещена по адресу, кратному n байт.
-        Если не используется, то макрос не должен быть определен */
-    #define LPRAGMA_ALIGN(n) align(n)
+        Если не используется, то этот макрос должен быть определен как пустой. */
+    #define LALIGN(n) __declspec( align( n ) )
     /** Определение, что переменная должна быть помещена по адресу, кратному n байт,
         через атрибут в конце определения этой переменной (как в GCC).
         Если не используется, то этот макрос должен быть определен как пустой. */

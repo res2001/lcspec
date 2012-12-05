@@ -64,6 +64,14 @@
     #define LPRAGMA_PACK_RESTORE    pack()
     #define LALIGN(n)               __declspec( align( n ) )
     #define LATTRIBUTE_ALIGN(n)
+    /*------------------------ Watcom/Open Watcom ----------------------------*/
+#elif defined ( _WATCOMC_ ) || defined (__WATCOMC__)
+    #define LINLINE                 __inline
+    #define LATTRIBUTE_PACKED
+    #define LPRAGMA_PACKED          pack(1)
+    #define LPRAGMA_PACK_RESTORE    pack()
+    #define LALIGN(n)                /* ??? */
+    #define LATTRIBUTE_ALIGN(n)
 #elif defined ( _CVI_ )
     /*------------------- определения для LabWindow/CVI ----------------------*/
     #define LINLINE               inline

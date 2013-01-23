@@ -1,25 +1,20 @@
 /***************************************************************************//**
   @file lcspec.h
-  Файл определяет набор макросов для выполнения действий, которые определяются
+  Файл вместе с файлами из подкаталога с именем компилятора определяет набор 
+      макросов для выполнения действий, которые определяются
       специфичным для компилятора способом:
         упаковка стркутур
         выравние переменных
         определение inline-функций
 
-  Константы вида LPRAGMA_XXX определяют содержимое директивы @c \#pragma, если она
-  нужна. Если данное действие задается не через @c \#pragma, то константа LPRAGMA_XXX
-  не определяется вообще.
-
-  Остальные определения используются в коде как есть и должны быть всегда
-  определены, пусть и пустым определением.
-
-  Объявление упакованной структуры с использованием макросов из данного файла
-  выполняется следующим образом:
+  Для задания упаковки структур используются два файла lcspec_pack_start.h и 
+      lcspec_pack_restore.h для возможности указать упаковку через #pragma.
+      Кроме того используется определение #LATTRIBUTE_PACKED для определения 
+      упаковки с помощью атрибутов (как в gcc).
+      Упакованная структура должна быть обявлена следующим образом :
 
     @code
-    #ifdef LPRAGMA_PACKED
-        #pragma LPRAGMA_PACKED
-    #endif
+    #include "lcspec_pack_start.h"
 
     struct struct_name
     {
@@ -29,17 +24,24 @@
 
     ...
 
-    #ifdef LPRAGMA_PACK_RESTORE
-        #pragma LPRAGMA_PACK_RESTORE
-    #endif
+    #include "lcspec_pack_restore.h"
     @endcode
 
-  Выравнивание на n байт выполняется подобным образом:
+  Выравнивание на n байт выполняется также через включение файла с предварительным 
+	определением границы выравнивания через LSPEC_ALIGNMENT. 
+       Ниже обявлены 2 переменные с выравниванием 4:
     @code
-    LALIGN(n) int i LATTRIBUTE_ALIGN(n);
+    #define LSPEC_ALIGNMENT 128
+    #include "lcspec_align.h"  
+    int v1;
+    #include "lcspec_align.h"  
+    unsigned v2;	
+    #undef LSPEC_ALIGNMENT
     @endcode
+ 
+  Для встроенных функций определено определение #LINLINE, которое    
 
-  На настоящий момент реализованы определения для GCC, MSVC и LabWindow/CVI.
+  На настоящий момент реализованы определения для GCC, IAR, MSVC, OpenWatcom и LabWindow/CVI.
 
   @author Borisov Alexey <borisov@lcard.ru>
   @date   10.01.2011
@@ -52,38 +54,23 @@
     /*------------------------ определения GCC -------------------------------*/
     #define LINLINE               inline
     #define LATTRIBUTE_PACKED     __attribute__ ((packed))
-    //#define LPRAGMA_PACKED   pack(1)
-    //#define LPRAGMA_PACK_RESTORE  pack()
-    #define LALIGN(n)
-    #define LATTRIBUTE_ALIGN(n)   __attribute__ ((aligned (n)))
 #elif defined ( _MSC_VER )
     /*------------------------ определения MSVC ------------------------------*/
     #define LINLINE                 __inline
     #define LATTRIBUTE_PACKED
-    #define LPRAGMA_PACKED          pack(1)
-    #define LPRAGMA_PACK_RESTORE    pack()
-    #define LALIGN(n)               __declspec( align( n ) )
-    #define LATTRIBUTE_ALIGN(n)
     /*------------------------ Watcom/Open Watcom ----------------------------*/
 #elif defined ( _WATCOMC_ ) || defined (__WATCOMC__)
     #define LINLINE                 __inline
     #define LATTRIBUTE_PACKED
-    #define LPRAGMA_PACKED          pack(1)
-    #define LPRAGMA_PACK_RESTORE    pack()
-    #define LALIGN(n)                /* ??? */
-    #define LATTRIBUTE_ALIGN(n)
 #elif defined ( _CVI_ )
     /*------------------- определения для LabWindow/CVI ----------------------*/
     #define LINLINE               inline
     #define LATTRIBUTE_PACKED
-    #define LPRAGMA_PACKED        pack(1)
-    #define LPRAGMA_PACK_RESTORE  pack()
-    #define LALIGN(n)             __declspec( align( n ) )
-    #define LATTRIBUTE_ALIGN(n)
 #elif defined ( __CC_ARM   )
     #error "cc arm compiler spec. is't defined"
 #elif defined ( __ICCARM__ )
-    #error "iar compiler spec. is't defined"
+    #define LINLINE               inline
+    #define LATTRIBUTE_PACKED
 #elif defined   (  __TASKING__  )
     #error "tasking compiler spec. is't defined"
 #else
@@ -94,25 +81,15 @@
     #define LINLINE inline
     /** Определение упакованной структуры через атрибут в конце стркутуры (как в GCC).
          Если не используется, то этот макрос должен быть определен как пустой. */
-    #define LATTRIBUTE_PACKED __attribute__ ((packed))
-    /** Содержимое @c \#pragmа для указания, что дальше в файле идут упакованные
-         данные. Если не используется, то макрос не должен быть определен */
-    #define LPRAGMA_PACKED   pack(1)
-
-    /** Содержимое @c \#pragmа для указания, что дальше в файле идут данные c
-        режимом упаковки по-умолчанию.
-        Если не используется, то макрос не должен быть определен */
-    #define LPRAGMA_PACK_RESTORE  pack()
-
-    /** Указание, что следующая переменная должна быть
-        помещена по адресу, кратному n байт.
-        Если не используется, то этот макрос должен быть определен как пустой. */
-    #define LALIGN(n) __declspec( align( n ) )
-    /** Определение, что переменная должна быть помещена по адресу, кратному n байт,
-        через атрибут в конце определения этой переменной (как в GCC).
-        Если не используется, то этот макрос должен быть определен как пустой. */
-    #define LATTRIBUTE_ALIGN(n) __attribute__ ((aligned (n)))
+    #define LATTRIBUTE_PACKED __attribute__ ((packed))    
 #endif
+
+
+/* теперь вместо определения прагм используются include-файлы
+ * (так как предыдущий вариант работал не на всех компиляторах) */
+#define LPRAGMA_PACKED       error: you must use new syntax for packed structs
+#define LPRAGMA_PACK_RESTORE error: you must use new syntax for packed structs
+#define LALIGN               error: you must use new syntax for aligned variables
 
 
 #endif /* LCSPEC_H_ */

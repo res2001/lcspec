@@ -1,0 +1,1 @@
+__attribute__ ((aligned (LSPEC_ALIGNMENT)))

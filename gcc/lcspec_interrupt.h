@@ -1,1 +1,1 @@
-__attribute__ ((interrupt))
+__attribute__ ((__interrupt__))

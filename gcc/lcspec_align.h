@@ -1,1 +1,1 @@
-__attribute__ ((aligned (LSPEC_ALIGNMENT)))
+__attribute__ ((__aligned__ (LSPEC_ALIGNMENT)))
